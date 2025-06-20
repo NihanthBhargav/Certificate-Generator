@@ -34,8 +34,8 @@ def generate():
 
     # Field Data
     pdf.set_text_color(0, 0, 0)
-    x = 30          # Left margin
-    start_y = 70    # Start below title
+    x = 30
+    start_y = 70
     line_height = 12
 
     fields = [
@@ -54,13 +54,13 @@ def generate():
         y = start_y + i * line_height
         pdf.set_xy(x, y)
 
-        pdf.set_font("Arial", size=16, style='B')   # Bold label
+        pdf.set_font("Arial", size=16, style='B')
         pdf.cell(50, line_height, f"{label}:", ln=False)
 
-        pdf.set_font("Arial", size=16)              # Regular value
+        pdf.set_font("Arial", size=16)
         pdf.cell(0, line_height, value, ln=True)
 
-    # QR Code generation
+    # QR Code
     qr_data = f"{cert_type.upper()} | {data['full_name']} | Reg No: {data['reg_no']}"
     qr = qrcode.make(qr_data)
     qr_path = os.path.join("output", "temp_qr.png")
@@ -68,10 +68,14 @@ def generate():
     pdf.image(qr_path, x=150, y=240, w=40)
     os.remove(qr_path)
 
-    # Save and return PDF
+    # Save PDF and return
     pdf.output(output_path)
     return send_file(output_path, as_attachment=True)
 
+# ✅ Final deployment-ready block for Render
 if __name__ == '__main__':
     os.makedirs("output", exist_ok=True)
-    app.run(debug=True)
+
+    # Host on 0.0.0.0 and use PORT from environment
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
